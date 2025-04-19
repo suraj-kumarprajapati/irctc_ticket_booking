@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import ticket.booking.entities.Ticket;
 import ticket.booking.entities.Train;
 import ticket.booking.entities.User;
 import ticket.booking.utils.UserServiceUtil;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Scanner;
 
 public class UserBookingService {
     private User user;
@@ -72,6 +74,9 @@ public class UserBookingService {
     }
 
     public boolean isUserLoggedIn() {
+        if(this.user == null)
+            return false;
+
         Optional<User> fetchedUser = userList.stream().filter(user1 -> {
             return user.getName().equals(user1.getName()) && UserServiceUtil.checkPassword(user.getPassword(), user1.getHashedPassword());
         }).findFirst();
@@ -88,19 +93,42 @@ public class UserBookingService {
         }
     }
 
-    public Boolean cancelBooking(String ticketId) {
+    public Boolean cancelBooking(String tId) {
         // step 1 : check if user is logged in or not
-        // step 2 :
+        if(!isUserLoggedIn()) {
+            System.out.println("Login first to fetch booking information.....");
+            return Boolean.FALSE;
+        }
 
+        // step 2 : get this ticket from the user's ticket list
+        Optional<Ticket> filteredTicket = user.getTicket(tId);
+
+        // step 3 : check if ticket is valid and available
+        if(tId == null || !filteredTicket.isPresent()) {
+            System.out.println("ticketId is invalid....");
+            return Boolean.FALSE;
+        }
+
+        // step 4 : if ticket is valid, remove it from booked tickets list
+        Ticket ticket = filteredTicket.get();
+        user.removeTicketFromList(ticket);
+
+        // step 5 : return cancellation confirmation
         return Boolean.TRUE;
     }
 
     public List<Train> getTrains(String source, String destination) {
-        return new ArrayList<Train>();
+       try {
+           TrainService trainService = new TrainService();
+           return trainService.searchTrains(source, destination);
+       }
+       catch(Exception e) {
+           return new ArrayList<>();
+       }
     }
 
     public List<List<Integer>> fetchSeats(Train train, int row, int seat) {
-        return new ArrayList<List<Integer>>();
+        return train.getSeats();
     }
 
     public Boolean bookTrainSeat(Train train, int row, int seat) {

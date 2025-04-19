@@ -56,7 +56,6 @@ public class App {
                     }
 
                     System.out.println("Signup successful....");
-                    currentUser = userToSignup;
                     break;
 
                 case 2 :
@@ -72,7 +71,6 @@ public class App {
                             System.out.println("Incorrect credentials....Login failed.....");
                             break;
                         }
-                        currentUser = userToLogin;
                         System.out.println("Login successful.....");
                     }catch (IOException ex){
                         return;
@@ -80,20 +78,35 @@ public class App {
                     break;
 
                 case 3 :
-                    if( currentUser == null) {
-                        System.out.println("Please login first....");
-                        break;
-                    }
+
                     System.out.println("Fetching your bookings");
                     userBookingService.fetchBookings();
                     break;
 
-                default:
+                case 4 :
+
+                case 5 :
+
+                case 6 :
+                    // step 2 : get the ticket id from the user
+                    String tId = null;
+                    System.out.println("Enter the ticket id to be canceled : ");
+                    tId = scanner.next();
+                    Boolean canceled = userBookingService.cancelBooking(tId);
+                    if(canceled) {
+                        System.out.println("Ticket with ID " + tId + " has been canceled.");
+                    }
+                    else {
+                        System.out.println("Booking cancellation failed....");
+                    }
                     break;
 
+                case 7 :
+
+
+                default:
+                    break;
             }
         }
-
-
     }
 }

@@ -2,6 +2,7 @@ package ticket.booking.entities;
 
 
 import java.util.List;
+import java.util.Optional;
 
 public class User {
     private String userId;
@@ -71,5 +72,14 @@ public class User {
 
     public void setTicketsBooked(List<Ticket> ticketsBooked) {
         this.ticketsBooked = ticketsBooked;
+    }
+
+    public Optional<Ticket> getTicket(String tId) {
+        Optional<Ticket> filteredTicket = ticketsBooked.stream().filter(ticket1 -> ticket1.getTicketId().equals(tId)).findFirst();
+        return filteredTicket;
+    }
+
+    public void removeTicketFromList(Ticket ticket) {
+        ticketsBooked.remove(ticket);
     }
 }
